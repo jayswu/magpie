@@ -2382,7 +2382,7 @@ function routingPage(part) {
 
   // the log is drawn again only when what it says changes: it is asked to
   // on every trace update (#308)
-  let logR = null, headKey = "", stepsKey = "";
+  let logR = null, headKey = "", stepsKey = "", stepsFor = "";
   let bodiesFor = 0, bodiesKey = ""; // the request opened to its bodies (renderBodies)
   function renderLog() {
     const r = logR = pinned || cur;
@@ -2665,6 +2665,10 @@ function routingPage(part) {
       return { k, s, c, tr };
     });
     keepIcons(...was.values());
+    // a different request starts its steps at the top: without the cap above
+    // a many-key trace used to push the request list off the screen (#3764).
+    // the same request still keeps its scroll while its steps grow.
+    if (stepsFor !== r.id) { steps.scrollTop = 0; stepsFor = r.id; }
     replaceKeeping(steps, lis.map((x) => {
       if (x.li) return x.li;
       const { k, s, c, tr } = x;
